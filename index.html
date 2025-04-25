@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shared Timer</title>
+  <title>Flower Timer</title>
   <style>
     body { text-align: center; font-family: Arial; margin-top: 50px; }
     #timer { font-size: 48px; margin-bottom: 20px; }
@@ -17,16 +17,15 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Your Firebase config (paste yours here)
+    // ✅ Corrected Firebase config — only ONE const declaration
     const firebaseConfig = {
-  apiKey: "AIzaSyAIRhC9A6SxxjWv7l1niQVrzi8hxXQJYh8",
-  authDomain: "sampleprojectvz.firebaseapp.com",
-  databaseURL: "https://sampleprojectvz-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "sampleprojectvz",
-  storageBucket: "sampleprojectvz.firebasestorage.app",
-  messagingSenderId: "652091540259",
-  appId: "1:652091540259:web:4f14fed2947c9f89ff4296"
-};
+      apiKey: "AIzaSyAIRhC9A6SxxjWv7l1niQVrzi8hxXQJYh8",
+      authDomain: "sampleprojectvz.firebaseapp.com",
+      databaseURL: "https://sampleprojectvz-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "sampleprojectvz",
+      storageBucket: "sampleprojectvz.appspot.com",
+      messagingSenderId: "652091540259",
+      appId: "1:652091540259:web:4f14fed2947c9f89ff4296"
     };
 
     firebase.initializeApp(firebaseConfig);
