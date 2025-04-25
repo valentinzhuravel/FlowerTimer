@@ -69,4 +69,10 @@
     // Listen for changes in the start time from Firebase
     startTimeRef.on("value", (snapshot) => {
       const startTime = snapshot.val();
-      if (start
+      if (startTime) {
+        showTimer(startTime);  // Call showTimer to update the UI when startTime is received
+      }
+    });
+  </script>
+</body>
+</html>
