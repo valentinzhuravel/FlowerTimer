@@ -17,16 +17,16 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // ✅ Corrected Firebase config — only ONE const declaration
+    // Firebase config (ensure this is correct)
     const firebaseConfig = {
-  apiKey: "AIzaSyAIRhC9A6SxxjWv7l1niQVrzi8hxXQJYh8",
-  authDomain: "sampleprojectvz.firebaseapp.com",
-  databaseURL: "https://sampleprojectvz-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "sampleprojectvz",
-  storageBucket: "sampleprojectvz.appspot.com",
-  messagingSenderId: "652091540259",
-  appId: "1:652091540259:web:4f14fed2947c9f89ff4296"
-};
+      apiKey: "AIzaSyAIRhC9A6SxxjWv7l1niQVrzi8hxXQJYh8",
+      authDomain: "sampleprojectvz.firebaseapp.com",
+      databaseURL: "https://sampleprojectvz-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "sampleprojectvz",
+      storageBucket: "sampleprojectvz.appspot.com",
+      messagingSenderId: "652091540259",
+      appId: "1:652091540259:web:4f14fed2947c9f89ff4296"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -34,19 +34,39 @@
 
     let timerInterval;
 
+    // Start the timer when button is clicked
     function startTimer() {
       const now = Date.now();
-      startTimeRef.set(now);
+      startTimeRef.set(now);  // Sends the current time to Firebase
     }
 
+    // Function to format time in days:hours:minutes:seconds
+    function formatTime(milliseconds) {
+      const seconds = Math.floor(milliseconds / 1000);
+      const days = Math.floor(seconds / (24 * 3600));
+      const hours = Math.floor((seconds % (24 * 3600)) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remainingSeconds = seconds % 60;
+
+      // Ensure two digits for each component (e.g., 09 for hours)
+      return `${days}:${pad(hours)}:${pad(minutes)}:${pad(remainingSeconds)}`;
+    }
+
+    // Helper function to pad single digits with leading zeros
+    function pad(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
+    // Display the formatted timer
     function showTimer(startTime) {
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById("timer").textContent = elapsed;
+        const elapsed = Date.now() - startTime;
+        document.getElementById("timer").textContent = formatTime(elapsed);
       }, 1000);
     }
 
+    // Listen for changes in the start time from Firebase
     startTimeRef.on("value", (snapshot) => {
       const startTime = snapshot.val();
       if (startTime) showTimer(startTime);
