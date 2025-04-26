@@ -1,57 +1,39 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flower Timer</title>
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      text-align: center;
-      background-color: #f9f9f9;
-    }
-
-    h1 {
-      font-size: 1.5em;
-      margin-bottom: 20px;
-      padding: 0 20px;
-    }
-
-    #timer {
-      font-size: 2em;
-      margin-bottom: 30px;
-      word-wrap: break-word;
-    }
-
-    button {
-      font-size: 1.2em;
-      padding: 15px 30px;
-      border: none;
-      border-radius: 10px;
-      background-color: #4CAF50;
-      color: white;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
+    body { text-align: center; font-family: Arial; margin-top: 50px; }
+    #timer { font-size: 36px; margin-top: 20px; }
+    button { font-size: 18px; padding: 10px 20px; }
+    #login { display: none; margin-top: 20px; }
+    #main { display: none; }
+    input { margin: 5px; padding: 10px; font-size: 16px; }
   </style>
 </head>
 <body>
-  <h1>Час з моменту останнього поливу:</h1>
-  <div id="timer">0</div>
-  <button onclick="startTimer()">Квіти политі</button>
+  <h2>Flower Timer</h2>
 
-  <!-- Firebase -->
+  <!-- Login Form -->
+  <div id="login">
+    <input type="email" id="email" placeholder="Email" /><br />
+    <input type="password" id="password" placeholder="Password" /><br />
+    <button onclick="login()">Login</button>
+    <div id="loginError" style="color: red; margin-top: 10px;"></div>
+  </div>
+
+  <!-- Main Timer Section -->
+  <div id="main">
+    <p>Останній раз квіти були политі:</p>
+    <div id="timer">Завантаження...</div>
+    <button onclick="startTimer()">Квіти политі</button>
+    <br /><br />
+    <button onclick="logout()">Вийти</button>
+  </div>
+
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
@@ -66,16 +48,15 @@
     };
 
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.database();
     const startTimeRef = db.ref("startTime");
 
-    let timerInterval;
+    const loginDiv = document.getElementById("login");
+    const mainDiv = document.getElementById("main");
+    const loginError = document.getElementById("loginError");
 
-    function startTimer() {
-      const now = Date.now();
-      startTimeRef.set(now);
-    }
-
+    // Format time in DD days HH hours MM minutes SS seconds
     function formatTime(milliseconds) {
       const seconds = Math.floor(milliseconds / 1000);
       const days = Math.floor(seconds / (24 * 3600));
@@ -89,6 +70,8 @@
       return num < 10 ? '0' + num : num;
     }
 
+    let timerInterval;
+
     function showTimer(startTime) {
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
@@ -97,9 +80,38 @@
       }, 1000);
     }
 
-    startTimeRef.on("value", (snapshot) => {
-      const startTime = snapshot.val();
-      if (startTime) showTimer(startTime);
+    function startTimer() {
+      startTimeRef.set(Date.now());
+    }
+
+    function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          loginError.textContent = "";
+        })
+        .catch((error) => {
+          loginError.textContent = "Помилка входу: " + error.message;
+        });
+    }
+
+    function logout() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        loginDiv.style.display = "none";
+        mainDiv.style.display = "block";
+        startTimeRef.on("value", (snapshot) => {
+          const startTime = snapshot.val();
+          if (startTime) showTimer(startTime);
+        });
+      } else {
+        loginDiv.style.display = "block";
+        mainDiv.style.display = "none";
+      }
     });
   </script>
 </body>
