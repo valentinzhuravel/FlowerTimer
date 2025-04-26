@@ -1,18 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flower Timer</title>
   <style>
-    body { text-align: center; font-family: Arial; margin-top: 50px; }
-    #timer { font-size: 48px; margin-bottom: 20px; }
-    button { font-size: 20px; padding: 10px 20px; }
-    #timerTitle { font-size: 24px; margin-bottom: 20px; font-weight: bold; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+      background-color: #f9f9f9;
+    }
+
+    h1 {
+      font-size: 1.5em;
+      margin-bottom: 20px;
+      padding: 0 20px;
+    }
+
+    #timer {
+      font-size: 2em;
+      margin-bottom: 30px;
+      word-wrap: break-word;
+    }
+
+    button {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 10px;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 <body>
-  <!-- New title text above the timer -->
-  <div id="timerTitle">Востаннє квіти поливали</div>
-
+  <h1>Час з моменту останнього поливу:</h1>
   <div id="timer">0</div>
   <button onclick="startTimer()">Квіти политі</button>
 
@@ -21,7 +55,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase config (ensure this is correct)
     const firebaseConfig = {
       apiKey: "AIzaSyAIRhC9A6SxxjWv7l1niQVrzi8hxXQJYh8",
       authDomain: "sampleprojectvz.firebaseapp.com",
@@ -38,30 +71,24 @@
 
     let timerInterval;
 
-    // Start the timer when button is clicked
     function startTimer() {
       const now = Date.now();
-      startTimeRef.set(now);  // Sends the current time to Firebase
+      startTimeRef.set(now);
     }
 
-    // Function to format time in DD days HH hours MM minutes SS seconds
     function formatTime(milliseconds) {
       const seconds = Math.floor(milliseconds / 1000);
       const days = Math.floor(seconds / (24 * 3600));
       const hours = Math.floor((seconds % (24 * 3600)) / 3600);
       const minutes = Math.floor((seconds % 3600) / 60);
       const remainingSeconds = seconds % 60;
-
-      // Format as "DD days HH hours MM minutes SS seconds"
-      return `${days} днів ${pad(hours)} годин ${pad(minutes)} хвилин ${pad(remainingSeconds)} секунд тому`;
+      return `${days} днів ${pad(hours)} годин ${pad(minutes)} хвилин ${pad(remainingSeconds)} секунд`;
     }
 
-    // Helper function to pad single digits with leading zeros
     function pad(num) {
       return num < 10 ? '0' + num : num;
     }
 
-    // Display the formatted timer
     function showTimer(startTime) {
       clearInterval(timerInterval);
       timerInterval = setInterval(() => {
@@ -70,12 +97,9 @@
       }, 1000);
     }
 
-    // Listen for changes in the start time from Firebase
     startTimeRef.on("value", (snapshot) => {
       const startTime = snapshot.val();
-      if (startTime) {
-        showTimer(startTime);  // Call showTimer to update the UI when startTime is received
-      }
+      if (startTime) showTimer(startTime);
     });
   </script>
 </body>
